@@ -1,0 +1,94 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(BreathingAnimationApp());
+}
+
+class BreathingAnimationApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Breathing Animation'),
+        ),
+        body: Center(
+          child: BreathingAnimation(),
+        ),
+      ),
+    );
+  }
+}
+
+class BreathingAnimation extends StatefulWidget {
+  @override
+  _BreathingAnimationState createState() => _BreathingAnimationState();
+}
+
+class _BreathingAnimationState extends State<BreathingAnimation> with TickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Crear un controlador de animación
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 4), // Duración total de la animación (4 segundos en este caso)
+      reverseDuration: Duration(seconds: 4), // Duración de regreso (mismo que duración total)
+    );
+
+    // Definir la curva de la animación (para simular un efecto de respiración suave)
+    final curve = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
+
+    // Crear una animación que varíe el tamaño del círculo (en este caso, el radio del círculo)
+    _animation = Tween<double>(begin: 0.2, end: 1.0).animate(curve);
+
+    // Repetir la animación indefinidamente (simulando respiración continua)
+    _controller.repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose(); // Liberar recursos del controlador de animación
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        // Determinar el texto a mostrar según el valor de la animación
+        String text = _animation.status == AnimationStatus.forward ? 'Inspira' : 'Espira';
+
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                text,
+                style: TextStyle(
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 20.0),
+              Container(
+                width: 200 * _animation.value,
+                height: 200 * _animation.value,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.blue,
+                  border: Border.all(color: Colors.white, width: 4.0),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
