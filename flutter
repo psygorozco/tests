@@ -1,0 +1,95 @@
+import 'dart:async';
+import 'dart:math';
+
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(AudioVisualizerApp());
+}
+
+class AudioVisualizerApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Audio Visualizer'),
+        ),
+        body: Center(
+          child: Container(
+            child: AudioVisualizer(),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AudioVisualizer extends StatefulWidget {
+  @override
+  _AudioVisualizerState createState() => _AudioVisualizerState();
+}
+
+class _AudioVisualizerState extends State<AudioVisualizer> {
+  List<double> amplitudes =
+      List.filled(20, 0.0); // Número de barras y su amplitud inicial
+  late Timer timer;
+  Random random = Random();
+
+  @override
+  void initState() {
+    super.initState();
+    // Simular actualización de amplitudes
+    timer = Timer.periodic(Duration(milliseconds: 100), (Timer t) {
+      updateAmplitudes();
+    });
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
+
+  void updateAmplitudes() {
+    setState(() {
+      // Actualizar aleatoriamente las amplitudes para simular frecuencias de audio
+      amplitudes =
+          List.generate(amplitudes.length, (index) => random.nextDouble());
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(
+        amplitudes.length,
+        (index) => AudioBar(
+            height: amplitudes[index] *
+                200), // Multiplicar por 200 para ajustar la altura
+      ),
+    );
+  }
+}
+
+class AudioBar extends StatelessWidget {
+  final double height;
+
+  AudioBar({required this.height});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 10, // Ancho fijo de cada barra
+      height: height,
+      margin: EdgeInsets.symmetric(horizontal: 2),
+      decoration: BoxDecoration(
+        color: Colors.blueAccent, // Color de las barras
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(5),
+        ),
+      ),
+    );
+  }
+}
